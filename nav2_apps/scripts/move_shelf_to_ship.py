@@ -24,17 +24,17 @@ from geometry_msgs.msg import Quaternion
 
 from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
 from nav2_apps.srv import GoToLoading
-from std_msgs.msg import Empty
+from std_msgs.msg import String
 
 
 positions_sim = {
     "initial": [0.0, 0.0, 0.0],
-    "loading": [5.40551, -0.315346, -1.57],
+    "loading": [5.7, 0.0, -1.74],
     "shipping": [0.985014, -2.9352, 1.57]}
 
 positions = {
     "initial": [0.0, 0.0, 0.0],
-    "loading": [4.45418, -1.11213, -1.57],
+    "loading": [4.58268, -0.723106, -1.69711],
     "shipping": [0.236652, -2.92636, 1.57]}
 
 
@@ -63,7 +63,7 @@ def main():
     #node.get_logger().info(f"Quaternion result: {quaternion_result}")
 
     # Publisher to unload
-    publisher = node.create_publisher(Empty, 'elevator_down', 10)
+    publisher = node.create_publisher(String, 'elevator_down', 10)
     publisher_cmd = node.create_publisher(Twist, '/robot/cmd_vel', 10)
     twist_msg = Twist()
 
@@ -95,7 +95,7 @@ def main():
     loading_pose.pose.position.x = positions['loading'][0]
     loading_pose.pose.position.y = positions['loading'][1]
     loading_pose.pose.orientation = rpy_to_quaternion(positions['loading'][2])
-    print('Going to loading pose')
+    node.get_logger().info('Going to loading pose')
     navigator.goToPose(loading_pose)
 
     
@@ -104,7 +104,7 @@ def main():
     result = navigator.getResult()
 
     if result == TaskResult.SUCCEEDED:
-        print('Arrived to loading pose')
+        node.get_logger().info('Arrived to loading pose')
         # Call service
         # Create a request
         request = GoToLoading.Request()
@@ -125,6 +125,9 @@ def main():
         else:
             node.get_logger().error('Service call failed!')
             exit(-1)
+
+        # Wait for the platform to go up
+        time.sleep(8)
 
         # Go back and twist
         twist_msg.linear.x = -0.2 
@@ -162,11 +165,11 @@ def main():
         navigator.goToPose(shipping_destination)
 
     elif result == TaskResult.CANCELED:
-        print('Going to loading was canceled. ')
+        node.get_logger().error('Going to loading was canceled. ')
         exit(-1)
 
     elif result == TaskResult.FAILED:
-        print('Going to loading failed!')
+        node.get_logger().error('Going to loading failed!')
         exit(-1)
 
 
@@ -175,12 +178,15 @@ def main():
     result = navigator.getResult()
     
     if result == TaskResult.SUCCEEDED:
-        print('Arrived to shipping pose')
+        node.get_logger().info('Arrived to shipping pose')
         # Unload
         # Create an empty message
-        msg = Empty()
+        msg = String()
         # Publish the message
         publisher.publish(msg)
+
+        # Wait for the platform to go down
+        time.sleep(8)
 
         # Get out under the platform
         twist_msg.linear.x = 0.2 
@@ -205,11 +211,11 @@ def main():
         navigator.goToPose(shipping_destination)
 
     elif result == TaskResult.CANCELED:
-        print('Going to shipping was canceled. ')
+        node.get_logger().error('Going to shipping was canceled. ')
         exit(-1)
 
     elif result == TaskResult.FAILED:
-        print('Going to shipping failed!')
+        node.get_logger().error('Going to shipping failed!')
         exit(-1)
 
 
@@ -218,14 +224,14 @@ def main():
     result = navigator.getResult()
 
     if result == TaskResult.SUCCEEDED:
-        print('Arrived to initial pose')
+        node.get_logger().info('Arrived to initial pose')
 
     elif result == TaskResult.CANCELED:
-        print('Going to initial was canceled. ')
+        node.get_logger().error('Going to initial was canceled. ')
         exit(-1)
 
     elif result == TaskResult.FAILED:
-        print('Going to initial failed!')
+        node.get_logger().error('Going to initial failed!')
         exit(-1)
 
     exit(0)
