@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- uncomment this line for the mobile base RB1 -->
+    <rosparam file="/home/user/catkin_ws/src/load_params/params/topics_base.yaml" command="load"/>
+    <!-- uncomment this line for the robot arm UR -->
+    <!-- <rosparam file="/home/user/catkin_ws/src/load_params/params/topics_arm.yaml" command="load"/> -->
+</launch>

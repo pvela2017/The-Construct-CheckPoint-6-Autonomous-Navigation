@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="limited" default="false" doc="If true, limits joint range [-PI, PI] on all joints." />
+    <arg name="launch_gripper" default="true"/>
+ 
+    <!-- send robot urdf to param server -->
+    <include file="$(find ur_e_description)/launch/ur3e_upload.launch">
+        <arg name="limited" value="$(arg limited)"/>
+    </include>
+
+    <!-- push robot_description to factory and spawn robot in gazebo -->
+    <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model ur3 -x 0 -y 0 -z 0" respawn="false" output="screen" />
+
+    <include file="$(find ur_e_gazebo)/launch/controller_utils.launch"/>
+
+    <!-- start this controller -->
+    <rosparam file="$(find ur_e_gazebo)/controller/arm_controller_ur3e.yaml" command="load"/>
+    <node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn arm_controller" respawn="false" output="screen"/>
+
+    <group if="$(arg launch_gripper)">
+        <rosparam file="$(find egh_gripper_description_new)/config/gripper_control.yaml" command="load"/>
+        <param name="gripper_controller/joint" value="egh_gripper_finger_left_joint"/>
+
+        <node name="controller_spawner_gripper" pkg="controller_manager" type="spawner" respawn="false"
+        output="screen" args="gripper_controller"/>
+    </group>
+
+    <!-- load other controllers -->
+    <node name="ros_control_controller_manager" pkg="controller_manager" type="controller_manager" respawn="false" output="screen" args="load joint_group_position_controller" />
+
+	<!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+	<include file="$(find gazebo_ros)/launch/empty_world.launch">
+		<!-- <arg name="world_name" value="$(arg world_name)"/>
+		<arg name="debug" value="$(arg debug)" /> -->
+		<arg name="paused" value="false"/>
+		<arg name="use_sim_time" value="true"/>
+		<arg name="headless" value="false"/>
+	</include>
+
+
+</launch>

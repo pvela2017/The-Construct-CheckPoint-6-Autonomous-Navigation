@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<launch>
+	<!-- arg to config the launch file-->
+	<arg name="launch_rviz" default="false"/>
+	<arg name="rviz_config" default="$(find rb1_base_gazebo)/rviz/rb1_base.rviz"/>
+	<arg name="launch_robot_a" default="true"/>
+	<arg name="gazebo_world" default="$(find rb1_base_gazebo)/worlds/ros2_online_workshop.world"/>
+	<!-- <arg name="gazebo_world" default="$(find rb1_base_gazebo)/worlds/empty_world.world"/> -->
+
+	<arg name="debug" default="false"/>
+
+	<!--params of the different robots-->
+	<!-- robot a -->
+	<arg name="id_robot_a" default="robot"/>
+	<arg name="xacro_robot_a" default="rb1_base.urdf.xacro"/>
+	<arg name="has_elevator_robot_a" default="false"/>
+	<arg name="x_init_pose_robot_a" default="0.0" />
+	<arg name="y_init_pose_robot_a" default="0.0" />
+	<arg name="z_init_pose_robot_a" default="0.0" />
+	<arg name="init_yaw_robot_a" default="0.0" />
+	<arg name="gmapping_robot_a" default="false"/>
+	<arg name="amcl_and_mapserver_robot_a" default="false"/>
+	<arg name="map_frame_robot_a" default="$(arg id_robot_a)_map"/>
+	<arg name="move_base_robot_a" default="false"/>
+	<arg name="pad_robot_a" default="false"/>
+
+ 
+	<!--BEGIN ROBOT 1-->
+	<include if="$(arg launch_robot_a)" file="$(find rb1_base_gazebo)/launch/rb1_base_one_robot.launch">
+		<arg name="id_robot" value="$(arg id_robot_a)"/>
+		<arg name="xacro_robot" value="$(arg xacro_robot_a)"/>
+		<arg name="has_elevator" value="$(arg has_elevator_robot_a)"/>
+		<arg name="x_init_pose" value="$(arg x_init_pose_robot_a)"/>
+		<arg name="y_init_pose" value="$(arg y_init_pose_robot_a)"/>
+		<arg name="z_init_pose" value="$(arg z_init_pose_robot_a)"/>
+		<arg name="init_yaw" value="$(arg init_yaw_robot_a)"/>
+		<arg name="launch_gmapping" value="$(arg gmapping_robot_a)"/>
+		<arg name="global_frame" value="$(arg map_frame_robot_a)"/>
+		<arg name="launch_pad" value="$(arg pad_robot_a)"/>
+	</include>
+
+
+	<!-- gazebo simulation and rviz visualization-->
+	<include file="$(find rb1_base_gazebo)/launch/gazebo_rviz.launch">
+		<arg name="launch_rviz" value="$(arg launch_rviz)"/>
+		<arg name="world_name" value="$(arg gazebo_world)"/>
+		<arg name="debug" value="$(arg debug)"/>
+		<arg name="rviz_config" value="$(arg rviz_config)"/>
+	</include>
+
+	<!-- Launch fake elevator action server to mimic real robot -->
+	<node pkg="robotnik_base_hw_sim" type="elevator_fake_action_server.py" name="set_elevator" ns="robot/robotnik_base_control" output="screen"/>
+
+	<!-- Launch fake elevator pickup service server that is called by action server above -->
+	<include file="$(find robotnik_base_hw_sim)/launch/elevator_fake_pickup_gazebo.launch"></include>
+
+
+</launch>

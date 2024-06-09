@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro"
+       name="ur3e" >
+
+  <!-- common stuff -->
+  <xacro:include filename="$(find ur_e_description)/urdf/common.gazebo.xacro" />
+
+  <!-- ur3e -->
+  <xacro:include filename="$(find ur_e_description)/urdf/ur3e.urdf.xacro" />
+
+  <!-- Include EGH Gripper -->
+  <!-- <xacro:include filename="$(find egh_gripper_description_new)/urdf/egh_gripper.urdf.xacro" /> -->
+  
+
+  <!-- Include RG2 Gripper -->
+  <xacro:include filename="$(find rg2_gripper_description)/urdf/rg2_gripper.urdf.xacro" />
+
+  <!-- Import all available sensors -->
+  <xacro:include filename="$(find robotnik_sensors)/urdf/all_sensors.urdf.xacro" />
+
+  <!-- arm -->
+  <xacro:ur3e_robot prefix="" joint_limited="false"/>
+
+  <link name="world" />
+
+  <joint name="world_joint" type="fixed">
+    <parent link="world" />
+    <child link = "base_link" />
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+  </joint>
+
+  <!-- Schunk RG2 -->
+  <xacro:rg2_gripper prefix="rg2_gripper" parent="ee_link">
+      <!--<origin xyz="5.0 5.0 5.0" rpy="0 0 ${pi/2}"/>-->
+  </xacro:rg2_gripper>
+
+  <!-- Intel Realsense -->
+  <xacro:sensor_r430 prefix="wrist_rgbd" parent="world" prefix_topic="wrist_rgbd">
+  </xacro:sensor_r430>
+
+
+</robot>

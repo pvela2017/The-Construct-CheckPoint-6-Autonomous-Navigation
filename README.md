@@ -1,30 +1,14 @@
-# CheckPoint 4 ROS2 Fundamentals
+# CheckPoint 6 Autonomous Navigation
 
 <a name="readme-top"></a>
 
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#software-prerequisites">Software Prerequisites</a></li>
-        <li><a href="#hardware-prerequisites">Hardware Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#real-robot">Real Robot</a></li>
-  </ol>
-</details>
-
-
 ## About The Project
-This project is about one robot must attempt to escape, while the other robot utilizes the TF frames to locate and track it. With the help of the TF tree, the pursuing robot can accurately identify the position of the escaping robot and give chase. To achieve this, a robot model ws created using URDF and subsequently refactor it using XACRO macros. Additionally, an algorithm that enables a robot to pursue and follow another robot that is attempting to evade capture was implemented.
+The goal of this project is to design the Navigation System of a mobile robot that must work in a warehouse. In the first part of the project, the navigation system of the RB1 mobile robot was configured, including:
+* Created a map of the warehouse
+* Localized the RB-1 in the map
+* Launch the Nav2 system that allows to send navigation goals to the robot
+* Configured all the required navigation parameters for cartographer
+In the second part of the project, the Simple Commander API was used to create some navigation routes for the robot.
 
 ![This is an image](images/preview.png)
 
@@ -33,7 +17,9 @@ This project is about one robot must attempt to escape, while the other robot ut
 
 ### Software Prerequisites
 * Ubuntu 22.04
-* ROS2 Foxy
+* ROS1 Noetic
+* ROS2 Galactic
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -42,12 +28,18 @@ This project is about one robot must attempt to escape, while the other robot ut
 1. Clone the repo:
    ```sh
    cd ~ && \
-   git clone https://github.com/pvela2017/The-Construct-CheckPoint-4-ROS2-Fundamentals
+   git clone https://github.com/pvela2017/The-Construct-CheckPoint-6-Autonomous-Navigation
    ```
-2. Download additional files:
+2. Compile the simulation:
    ```sh
-   cd ~/The-Construct-CheckPoint-4-ROS2-Fundamentals/ros2_ws/src && \
-   git clone https://bitbucket.org/theconstructcore/checkpoint4_auxiliary_files.git
+   source /opt/ros/noetic/setup.bash && \
+   cd ~/The-Construct-CheckPoint-6-Autonomous-Navigation/simulation_ws && \
+   catkin_make && \
+   cd ~/The-Construct-CheckPoint-6-Autonomous-Navigation/catkin_ws && \
+   catkin_make && \
+   source /opt/ros/galactic/setup.bash && \
+   cd ~/The-Construct-CheckPoint-6-Autonomous-Navigation/ros2_ws && \
+   colcon build
    ```
      
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -55,30 +47,66 @@ This project is about one robot must attempt to escape, while the other robot ut
 
 <!-- USAGE -->
 ## Usage
-### Local Simulation
-1. Compile and launch the simulation:
+### Local Simulation & Real Robot
+1. Launch the simulation:
    ```sh
-   cd ~/The-Construct-CheckPoint-4-ROS2-Fundamentals/ros2_ws && \
-   colcon build && \
-   source install/setup.bash && \
-   ros2 launch barista_robot_description barista_two_robots.launch.py
+   source /opt/ros/noetic/setup.bash && \
+   source ~/The-Construct-CheckPoint-6-Autonomous-Navigation/simulation_ws/devel/setup.bash && \
+   roslaunch rb1_base_gazebo warehouse_rb1.launch
    ```
-2. Launch the chasing algorithm:
+2. Launch the ros bridge:
    ```sh
-   source ~/The-Construct-CheckPoint-4-ROS2-Fundamentals/ros2_ws/install/setup.bash && \
-   ros2 run robot_chase robot_chase
+   source /opt/ros/noetic/setup.bash && \
+   source ~/The-Construct-CheckPoint-6-Autonomous-Navigation/catkin_ws/devel/setup.bash && \
+   roslaunch load_params load_params.launch && \
+   source /opt/ros/galactic/setup.bash && \
+   ros2 run ros1_bridge parameter_bridge && \
    ```
-3. Move the robot:
+3. Cartographer:
    ```sh
-   ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args --remap cmd_vel:=/robot2/cmd_vel
+   source /opt/ros/galactic/setup.bash && \
+   source ~/The-Construct-CheckPoint-6-Autonomous-Navigation/ros2_ws/install/setup.bash && \
+   ros2 launch cartographer_slam cartographer.launch.py
    ```
+3. Mapping:
+   ```sh
+   source /opt/ros/galactic/setup.bash && \
+   source ~/The-Construct-CheckPoint-6-Autonomous-Navigation/ros2_ws/install/setup.bash && \
+   ros2 launch map_server map_server.launch.py map_file:=warehouse_map_sim.yaml # simulation
+   ros2 launch map_server map_server.launch.py map_file:=warehouse_map_real.yaml # real
+   ```
+4. Localization:
+   ```sh
+   source /opt/ros/galactic/setup.bash && \
+   source ~/The-Construct-CheckPoint-6-Autonomous-Navigation/ros2_ws/install/setup.bash && \
+   ros2 launch localization_server localization.launch.py map_file:=warehouse_map_sim.yaml # simulation
+   ros2 launch localization_server localization.launch.py map_file:=warehouse_map_real.yaml # real
+   ```
+5. Keyboard:
+   ```sh
+   ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args --remap cmd_vel:=/robot/cmd_vel
+   ```
+6. Path planner:
+   ```sh
+   source /opt/ros/galactic/setup.bash && \
+   source ~/The-Construct-CheckPoint-6-Autonomous-Navigation/ros2_ws/install/setup.bash && \
+   ros2 launch path_planner_server pathplanner.launch.py
+   ```
+ 7. API commander:
+   ```sh
+   source /opt/ros/galactic/setup.bash && \
+   source ~/The-Construct-CheckPoint-6-Autonomous-Navigation/ros2_ws/install/setup.bash && \
+   ros2 launch localization_server localization.launch.py && \
+   ros2 launch path_planner_server pathplanner.launch.py && \
+   python3 ~/ros2_ws/src/nav2_apps/scripts/move_shelf_to_ship.py
+   ```  
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+<!-- RESULTS -->
+## Results
+[![Demo](https://img.youtube.com/vi/s4jkbh0bWyQ/0.jpg)](https://www.youtube.com/watch?v=s4jkbh0bWyQ)
 
 <!-- KEYS -->
 ## Key topics learnt
-* URDF & XACRO.
-* Simulation of multiple robots.
-* Gazebo plugins.
-* Publish TFs.
+* Keepout Mask.

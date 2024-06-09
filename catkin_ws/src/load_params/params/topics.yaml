@@ -1,0 +1,4 @@
+topics: [{topic: /tf, type: tf2_msgs/msg/TFMessage, queue_size: 500}, {topic: /tf_static, type: tf2_msgs/msg/TFMessage, queue_size: 500}, 
+{topic: /clock, type: rosgraph_msgs/msg/Clock, queue_size: 100}, {topic: /joint_states, type: sensor_msgs/msg/JointState, queue_size: 100}, {topic: /wrist_rgbd/depth/camera_info, type: sensor_msgs/msg/CameraInfo, queue_size: 100}, 
+{topic: /wrist_rgbd/depth/points, type: sensor_msgs/msg/PointCloud2, queue_size: 100}, {topic: /scan, type: sensor_msgs/msg/LaserScan, queue_size: 100}, {topic: /odom, type: nav_msgs/msg/Odometry, queue_size: 100}, {topic: /robot/cmd_vel, type: geometry_msgs/msg/Twist, queue_size: 100}, {topic: /cmd_vel, type: geometry_msgs/msg/Twist, queue_size: 100}, {topic: /elevator_up, type: std_msgs/msg/Empty, queue_size: 100}, {topic: /elevator_down, type: std_msgs/msg/Empty, queue_size: 100}] 
+

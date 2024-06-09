@@ -1,0 +1,4 @@
+robotnik_msgs/FakeElevatorAction action
+---
+bool result
+---
