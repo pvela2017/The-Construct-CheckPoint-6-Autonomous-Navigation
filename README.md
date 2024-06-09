@@ -11,6 +11,7 @@ The goal of this project is to design the Navigation System of a mobile robot th
 
 </br>
 In the second part of the project, the Simple Commander API was used to create some navigation routes for the robot.
+</br>
 
 ![This is an image](images/preview.png)
 
