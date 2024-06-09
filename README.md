@@ -92,7 +92,7 @@ In the second part of the project, the Simple Commander API was used to create s
    source ~/The-Construct-CheckPoint-6-Autonomous-Navigation/ros2_ws/install/setup.bash && \
    ros2 launch path_planner_server pathplanner.launch.py
    ```
- 7. API commander:
+7. API commander:
    ```sh
    source /opt/ros/galactic/setup.bash && \
    source ~/The-Construct-CheckPoint-6-Autonomous-Navigation/ros2_ws/install/setup.bash && \
