@@ -68,31 +68,31 @@ In the second part of the project, the Simple Commander API was used to create s
    source ~/The-Construct-CheckPoint-6-Autonomous-Navigation/ros2_ws/install/setup.bash && \
    ros2 launch cartographer_slam cartographer.launch.py
    ```
-3. Mapping:
+4. Mapping:
    ```sh
    source /opt/ros/galactic/setup.bash && \
    source ~/The-Construct-CheckPoint-6-Autonomous-Navigation/ros2_ws/install/setup.bash && \
    ros2 launch map_server map_server.launch.py map_file:=warehouse_map_sim.yaml # simulation
    ros2 launch map_server map_server.launch.py map_file:=warehouse_map_real.yaml # real
    ```
-4. Localization:
+5. Localization:
    ```sh
    source /opt/ros/galactic/setup.bash && \
    source ~/The-Construct-CheckPoint-6-Autonomous-Navigation/ros2_ws/install/setup.bash && \
    ros2 launch localization_server localization.launch.py map_file:=warehouse_map_sim.yaml # simulation
    ros2 launch localization_server localization.launch.py map_file:=warehouse_map_real.yaml # real
    ```
-5. Keyboard:
+6. Keyboard:
    ```sh
    ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args --remap cmd_vel:=/robot/cmd_vel
    ```
-6. Path planner:
+7. Path planner:
    ```sh
    source /opt/ros/galactic/setup.bash && \
    source ~/The-Construct-CheckPoint-6-Autonomous-Navigation/ros2_ws/install/setup.bash && \
    ros2 launch path_planner_server pathplanner.launch.py
    ```
-7. API commander:
+8. API commander:
    ```sh
    source /opt/ros/galactic/setup.bash && \
    source ~/The-Construct-CheckPoint-6-Autonomous-Navigation/ros2_ws/install/setup.bash && \
