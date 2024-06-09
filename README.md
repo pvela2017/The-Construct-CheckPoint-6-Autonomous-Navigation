@@ -8,6 +8,8 @@ The goal of this project is to design the Navigation System of a mobile robot th
 * Localized the RB-1 in the map
 * Launch the Nav2 system that allows to send navigation goals to the robot
 * Configured all the required navigation parameters for cartographer
+
+</br>
 In the second part of the project, the Simple Commander API was used to create some navigation routes for the robot.
 
 ![This is an image](images/preview.png)
