@@ -112,3 +112,6 @@ In the second part of the project, the Simple Commander API was used to create s
 <!-- KEYS -->
 ## Key Topics Learnt
 * Keepout Mask.
+* Mapping.
+* Localization.
+* Nav2.
